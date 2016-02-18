@@ -8,16 +8,16 @@
 # Create the ZFS pool
 # Also do badblocks checking
 
-hash zpool || exit 1
-hash badblocks || exit 1
-hash cryptsetup || exit 1
-hash smartctl || exit 1
-hash lsblk || exit 1
-hash readlink || exit 1
-hash openssl || exit 1
-hash dd || exit 1
-hash awk || exit 1
-hash sed || exit 1
+[ ! $(which zpool) ] && exit 1
+[ ! $(which badblocks) ] && exit 1
+[ ! $(which cryptsetup) ] && exit 1
+[ ! $(which smartctl) ] && exit 1
+[ ! $(which lsblk) ] && exit 1
+[ ! $(which readlink) ] && exit 1
+[ ! $(which openssl) ] && exit 1
+[ ! $(which dd) ] && exit 1
+[ ! $(which awk) ] && exit 1
+[ ! $(which sed) ] && exit 1
 
 
 set -u
