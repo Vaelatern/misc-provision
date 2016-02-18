@@ -8,17 +8,12 @@
 # Create the ZFS pool
 # Also do badblocks checking
 
-[ ! $(which zpool) ] && exit 1
-[ ! $(which badblocks) ] && exit 1
-[ ! $(which cryptsetup) ] && exit 1
-[ ! $(which smartctl) ] && exit 1
-[ ! $(which lsblk) ] && exit 1
-[ ! $(which readlink) ] && exit 1
-[ ! $(which openssl) ] && exit 1
-[ ! $(which dd) ] && exit 1
-[ ! $(which awk) ] && exit 1
-[ ! $(which sed) ] && exit 1
-
+for binary in zpool badblocks cryptsetup smartctl lsblk readlink openssl dd awk sed; do
+    if [ ! $(which $binary) ]; then
+        echo "Error: missing binary $binary. Script cannot continue." 1>&2
+        exit 1
+    fi
+done
 
 set -u
 set -e
