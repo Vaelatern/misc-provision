@@ -60,7 +60,7 @@ get_disk_id() {
 
 for disk in $drives; do
 	smartctl -t long "${disk}" 2>&1 >/dev/null && echo "Started smart on ${disk}"
-	badblocks -sv "${disk}" 2>&1 1>/tmp/badblocks.${disk#/dev/} &
+	badblocks -sv "${disk}" 2> /tmp/badblocks.${disk#/dev/} &
 done
 
 wait
