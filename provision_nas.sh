@@ -24,7 +24,7 @@ keyfile="/root/storage.key"
 size=512
 zpool_name="tank"
 zpool_vdev_size=6
-zpool_opts=(-o ashift=12 -O 'compression=lz4' -O 'dedup=on')
+zpool_opts=(-o ashift=12 -O 'compression=lz4')
 
 trsh_plain=1
 trsh_mirror=2
