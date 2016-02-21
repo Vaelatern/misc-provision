@@ -32,6 +32,7 @@ trsh_raidz=3
 trsh_raidz2=5
 trsh_raidz3=7
 
+echo "DateStart: $(date)"
 drives="$(lsblk -ipn --output name | sed '{:a { N; /-/ d };s/\n/ /;ba}')"
 cipher="$(cryptsetup benchmark | awk '/xts/ && substr($2, 0, 3) >= "512" { speed=(($3+0)+($5+0))/2; if (speed > max) { algo=$1; max=speed; }; }; END {print algo;}')${cipher_str}"
 
@@ -53,12 +54,14 @@ get_disk_id() {
 	done
 }
 
+echo "Date start-checks: $(date)"
 for disk in $drives; do
 	smartctl -t long "${disk}" >/dev/null 2>&1 && echo "Started smart on ${disk}"
 	badblocks -sv "${disk}" 2> "/tmp/${disk#/dev/}.badblocks" &
 done
 
 wait
+echo "Date end-checks: $(date)"
 
 openssl rand -out "$keyfile" -base64 $(( 2**21 * 3/4 ))
 
@@ -70,6 +73,8 @@ for disk in $drives; do
 	echo "${line}" >> /etc/crypttab
 done
 chmod a-rwx "${keyfile}"
+
+echo "Date end-cryptsetup: $(date)"
 
 vdev_spec=""
 vdev=""
@@ -93,9 +98,14 @@ zpool create -n ${zpool_opts[@]} ${zpool_name} ${vdev_spec}
 echo -n "Continue by pressing y, cancel with ^c [Y] "
 read
 
+echo "Date start-clean: $(date)"
+
 for disk in $drives; do
 	dd if=/dev/zero of="/dev/mapper/${zpool_name}-${disk#/dev/}" bs=1M
 done
 
+echo "Date end-clean: $(date)"
+
 zpool create ${zpool_opts[@]} ${zpool_name} ${vdev_spec}
 
+echo "DateEnd: $(date)"
