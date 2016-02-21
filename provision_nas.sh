@@ -101,8 +101,10 @@ read
 echo "Date start-clean: $(date)"
 
 for disk in $drives; do
-	dd if=/dev/zero of="/dev/mapper/${zpool_name}-${disk#/dev/}" bs=1M
+	dd if=/dev/zero of="/dev/mapper/${zpool_name}-${disk#/dev/}" bs=1M >"/tmp/${zpool_name}-${disk#/dev/}.dd" &
 done
+
+wait
 
 echo "Date end-clean: $(date)"
 
