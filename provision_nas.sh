@@ -15,6 +15,8 @@ for binary in zpool badblocks cryptsetup smartctl lsblk readlink openssl dd awk 
     fi
 done
 
+[ -z "$drives" ] && echo "Sorry, need drives= a space separated list of drives to use" && exit 1
+
 set -u
 set -e
 
@@ -32,8 +34,9 @@ trsh_raidz=3
 trsh_raidz2=5
 trsh_raidz3=7
 
+[ ! -f "$keyfile" ] && openssl rand -out "$keyfile" -base64 $(( 2**21 * 3/4 ))
+
 echo "DateStart: $(date)"
-drives="$(lsblk -ipn --output name | sed '{:a { N; /-/ d };s/\n/ /;ba}')"
 cipher="$(cryptsetup benchmark | awk '/xts/ && substr($2, 0, 3) >= "512" { speed=(($3+0)+($5+0))/2; if (speed > max) { algo=$1; max=speed; }; }; END {print algo;}')${cipher_str}"
 
 vdev_type() {
@@ -63,8 +66,7 @@ done
 wait
 echo "Date end-checks: $(date)"
 
-openssl rand -out "$keyfile" -base64 $(( 2**21 * 3/4 ))
-
+chmod u+r "${keyfile}"
 for disk in $drives; do
 	echo "YES" | cryptsetup -s "$size" -c "${cipher}" -h "${hash}" --key-file "${keyfile}" luksFormat "${disk}"
 	cryptsetup --key-file "${keyfile}" open --type luks "${disk}" "${zpool_name}-${disk#/dev/}"
